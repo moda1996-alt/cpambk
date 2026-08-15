@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="author" content="محمود الباز قابيل"/>
+<meta name="robots" content="noindex"/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1F44'/%3E%3Crect x='32' y='32' width='36' height='36' rx='6' fill='%23ffffff' transform='rotate(45 50 50)'/%3E%3C/svg%3E"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<meta name="theme-color" content="#0A1F44"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="stylesheet" href="style.css"/>
+<title>محاكي المراجعة التعليمي | محمود الباز قابيل</title>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div class="topbar">
+  <div class="container topbar-inner">
+    <div class="topbar-info">
+      <a href="tel:+201100811408"><i class="fa-solid fa-phone"></i> 01100811408</a>
+      <a href="https://wa.me/201067777481" class="hide-s"><i class="fa-brands fa-whatsapp"></i> 01067777481</a>
+      <span class="d-none-m hide-s"><i class="fa-solid fa-clock"></i> السبت - الخميس: 9 ص - 5 م</span>
+    </div>
+    <div class="topbar-links">
+      <a href="https://www.facebook.com/profile.php?id=61590778595481" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href="https://wa.me/201067777481"><i class="fa-brands fa-whatsapp"></i></a>
+      <a href="https://www.linkedin.com/in/mahmoud-kabil/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+      <span class="topbar-sep"></span>
+      <a href="index.html" style="color:#fff;font-weight:700;font-size:13px;padding:5px 14px;border:1px solid rgba(255,255,255,.2);border-radius:8px;"><i class="fa-solid fa-house" style="margin-left:5px;"></i> الرئيسية</a>
+    </div>
+  </div>
+</div>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="crumbs"><a href="index.html">الرئيسية</a><i class="fa-solid fa-chevron-left"></i><a href="tools.html">الأدوات الذكية</a><i class="fa-solid fa-chevron-left"></i><span class="cur">محاكي المراجعة</span></div>
+    <h1>محاكي المراجعة <em>التعليمي التفاعلي</em></h1>
+    <p>رحلة تفصيلية عبر مراحل المراجعة وفق معايير المراجعة المصرية — تعلّم بالخطوات والتطبيقات العملية</p>
+  </div>
+</section>
+
+<section class="section" style="padding-top:40px;padding-bottom:80px;">
+  <div class="container">
+    <div class="sim-wrap" id="simRoot"></div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;">
+      <span>© 2026 محمود الباز قابيل — جميع الحقوق محفوظة</span>
+      <span><a href="tools.html">العودة إلى الأدوات الذكية</a></span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop"><i class="fa-solid fa-arrow-up"></i></button>
+<a href="https://wa.me/201067777481" class="wa-float" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+
+<script src="main.js"></script>
+<script>
+(function(){
+'use strict';
+
+const STAGES = [
+  {
+    title:'قبول المهمة والتخطيط المبدئي',
+    std:'معيار المراجعة المصري رقم 210',
+    desc:'المرحلة الأولى: تقرير هل تقبل المهمة أم لا؟ تقيم استقلالك، نزاهة الإدارة، ومواردك اللازمة.',
+    type:'choice',
+    question:'عرضت عليك شركة "النور للتجارة" مهمة مراجعة حساباتها. اكتشفت أن أحد أقاربك من الدرجة الأولى يملك 15% من أسهمها. ماذا تفعل؟',
+    choices:[
+      {t:'تقبل المهمة وتُفصح عن العلاقة في تقريرك', c:false},
+      {t:'ترفض المهمة لأن استقلاليتك مُهدَّدة جوهرياً', c:true},
+      {t:'تقبل المهمة لكنك تُقصي نفسك من فحص أسهم قريبك', c:false},
+      {t:'تُحيل المهمة إلى زميل آخر في مكتبك', c:false}
+    ],
+    explain:'وفق المعيار المصري 210 ومعيار آداب المهنة، وجود مصلحة مالية مباشرة لأحد الأقارب من الدرجة الأولى في العميل يُعد تهديداً جوهرياً للاستقلالية لا يمكن التغلب عليه بإجراءات وقائية. الرفض هو الخيار الصحيح مهنياً.'
+  },
+  {
+    title:'فهم المنشأة وبيئتها',
+    std:'معيار المراجعة المصري رقم 315',
+    desc:'دراسة عميقة لنشاط الشركة، قطاعها، هيكل الرقابة الداخلية، والمخاطر التي تواجهها.',
+    type:'checklist',
+    question:'ما العناصر التي يجب أن تفهمها قبل بدء فحص شركة تعمل في الاستيراد والتصدير؟ (اختر كل ما ينطبق)',
+    options:[
+      {t:'البنود الجمركية للسلع التي تتاجر بها', c:true},
+      {t:'العملات الأجنبية التي تتعامل بها ومخاطر الصرف', c:true},
+      {t:'لون شعار الشركة والمطبوعات التسويقية', c:false},
+      {t:'الأنظمة الجمركية ومتطلبات الاستيراد', c:true},
+      {t:'مستوى التعليم العام لموظفيها', c:false}
+    ],
+    explain:'فهم المنشأة يشمل: النشاط، البيئة التنظيمية، الأنظمة الجمركية والضريبية، العملات ومخاطرها، المنافسين، والعمليات الجوهرية. الأمور الشكلية (الشعار، التعليم العام) لا علاقة لها بتقييم المخاطر.'
+  },
+  {
+    title:'تقييم المخاطر والرقابة الداخلية',
+    std:'معيار المراجعة المصري رقم 315 و 330',
+    desc:'تحديد المخاطر الجوهرية وتقييم فاعلية الرقابة الداخلية للتصميم استجابة مناسبة لها.',
+    type:'input',
+    question:'شركة مبيعاتها السنوية 12,000,000 ج.م. حدد الأهمية النسبية (Materiality) للمركز المالي بنسبة 5% من متوسط الأرباح (الأرباح = 2,000,000 ج.م). أدخل القيمة بالجنيه:',
+    correct:'100000',
+    accept:['100000','100,000','100٬000','100000 ج.م'],
+    explain:'الأهمية النسبية = 5% × 2,000,000 = 100,000 ج.م. الأخطاء أو التجاوزات التي تقل عن هذا الحد لا تُعتبر جوهرية في التأثير على قرارات مستخدمي القوائم المالية.'
+  },
+  {
+    title:'الإجراءات الجوهرية وجمع الأدلة',
+    std:'معيار المراجعة المصري رقم 500',
+    desc:'تطبيق إجراءات جوهرية للحصول على أدلة مراجعة كافية ومناسبة لإبداء الرأي.',
+    type:'choice',
+    question:'خلال فحص رصيد العملاء، وجدت أن رصيد عميل واحد يمثل 40% من إجمالي المدينين. ما الإجراء الأكثر ملاءمة؟',
+    choices:[
+      {t:'إرسال تأكيد خارجي مباشر إلى هذا العميل', c:true},
+      {t:'الاعتماد على كشف حساب داخلي من إدارة الشركة', c:false},
+      {t:'تجاهل الأمر لأنه عميل كبير وثابت', c:false},
+      {t:'شطب الرصيد من الدفاتر احتياطياً', c:false}
+    ],
+    explain:'التأكيد الخارجي (External Confirmation) من الأدلة الأكثر موثوقية وفق المعيار 500، خاصة عندما يكون الرصيد جوهرياً. الاعتماد على وثائق داخلية وحدها لا يكفي لمركز بهذه الأهمية.'
+  },
+  {
+    title:'الأحداث اللاحقة والافتراضات',
+    std:'معيار المراجعة المصري رقم 560 و 570',
+    desc:'فحص الأحداث اللاحقة لتاريخ الميزانية، وتقييم افتراض استمرارية النشاط.',
+    type:'choice',
+    question:'بعد تاريخ الميزانية (31/12) بأسبوعين، احترق مستودع رئيسي للشركة ولم يكن مؤمَّناً. ما التصرف الصحيح؟',
+    choices:[
+      {t:'لا علاقة لي به لأنه بعد تاريخ الميزانية', c:false},
+      {t:'أُفحص أثره وأطلب تعديل القوائم أو الإفصاح الكافي', c:true},
+      {t:'أُصدر تقريراً متحفظاً مباشرة', c:false},
+      {t:'أُوصي بتصفية الشركة', c:false}
+    ],
+    explain:'الأحداث اللاحقة التي توفر أدلة على أوضاع كانت موجودة عند تاريخ الميزانية، أو التي تؤثر جوهرياً على استمرارية النشاط، تتطلب تعديل القوائم أو إفصاحاً كافياً وفق المعيار 560.'
+  },
+  {
+    title:'إصدار تقرير المراجع',
+    std:'معيار المراجعة المصري رقم 700',
+    desc:'المرحلة الختامية: تكوين الرأي المهني وإصدار تقرير المراجع القانوني المعتمد.',
+    type:'choice',
+    question:'حصلت على أدلة كافية ومناسبة، والقوائم المالية معدة وفق المعايير المصرية دون أي تحفظات. ما نوع الرأي الذي تصدره؟',
+    choices:[
+      {t:'رأي متحفظ (Qualified Opinion)', c:false},
+      {t:'رأي بعدم إبداء رأي (Disclaimer)', c:false},
+      {t:'رأي سلبي (Adverse Opinion)', c:false},
+      {t:'رأي غير متحفظ / مقبول (Unmodified Opinion)', c:true}
+    ],
+    explain:'الرأي غير المتحفظ (Unmodified) يصدر عندما يرى المراجع أن القوائم المالية تُظهر بصدق وعدالة المركز المالي ونتائج الأعمال وفق الإطار المحاسبي المطبق، دون تحفظات أو قصور في الأدلة.'
+  }
+];
+
+let currentStage = 0, score = 0, answers = [];
+const root = document.getElementById('simRoot');
+
+function render(){
+  if(currentStage >= STAGES.length){ renderFinal(); return; }
+  const s = STAGES[currentStage];
+  const progress = ((currentStage) / STAGES.length) * 100;
+
+  let body = '';
+  if(s.type === 'choice'){
+    body = `<div class="sim-choices">` +
+      s.choices.map((c,i) => `<button class="sim-choice" data-i="${i}">${c.t}</button>`).join('') +
+      `</div>`;
+  } else if(s.type === 'input'){
+    body = `<div class="sim-input-row">
+      <input type="text" id="simInput" placeholder="أدخل القيمة..." dir="ltr">
+      <button class="btn btn-navy" id="simInputBtn">تحقق <i class="fa-solid fa-check"></i></button>
+    </div>
+    <div class="sim-result-box" id="simResultBox"></div>`;
+  } else if(s.type === 'checklist'){
+    body = `<div class="sim-checks">` +
+      s.options.map((o,i) => `<label class="sim-check"><input type="checkbox" data-i="${i}"> ${o.t}</label>`).join('') +
+      `</div>
+      <button class="btn btn-navy" id="simCheckBtn" style="margin-top:18px;"><i class="fa-solid fa-check-double"></i> تحقق من إجابتي</button>
+      <div class="sim-result-box" id="simResultBox"></div>`;
+  }
+
+  root.innerHTML = `
+    <div class="sim-progress-bar"><i style="width:${progress}%"></i></div>
+    <div class="sim-meta">
+      <span><i class="fa-solid fa-layer-group"></i> المرحلة ${currentStage+1} من ${STAGES.length}</span>
+      <span><i class="fa-solid fa-star"></i> النقاط: ${score} / ${currentStage}</span>
+    </div>
+    <div class="sim-card">
+      <span class="sim-std"><i class="fa-solid fa-book-open"></i> ${s.std}</span>
+      <h3>المرحلة ${currentStage+1}: ${s.title}</h3>
+      <p class="sim-desc">${s.desc}</p>
+      <div style="background:var(--gray-50);border-right:4px solid var(--navy-500);border-radius:10px;padding:16px 20px;color:var(--navy-800);font-weight:700;font-size:16px;">${s.question}</div>
+      ${body}
+      <div class="sim-explain" id="simExplain"></div>
+    </div>`;
+
+  if(s.type === 'choice'){
+    root.querySelectorAll('.sim-choice').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = +btn.dataset.i;
+        const correct = s.choices[i].c;
+        if(correct) score++;
+        answers.push({stage: currentStage+1, correct, choice: s.choices[i].t});
+        root.querySelectorAll('.sim-choice').forEach((b,bi) => {
+          b.disabled = true;
+          if(s.choices[bi].c) b.classList.add('correct');
+          else if(bi === i) b.classList.add('wrong');
+        });
+        showExplain(s);
+        setTimeout(next, 2800);
+      });
+    });
+  }
+  if(s.type === 'input'){
+    const btn = document.getElementById('simInputBtn');
+    const inp = document.getElementById('simInput');
+    const box = document.getElementById('simResultBox');
+    btn.addEventListener('click', () => {
+      const val = inp.value.trim().replace(/[,٬\s]/g,'');
+      const correct = s.accept.some(a => a.replace(/[,٬\s]/g,'') === val);
+      if(correct) score++;
+      answers.push({stage: currentStage+1, correct, choice: inp.value});
+      box.classList.add('show');
+      box.innerHTML = correct
+        ? `<b style="color:#15803D;"><i class="fa-solid fa-circle-check"></i> إجابة صحيحة!</b><p style="margin-top:8px;color:var(--gray-600);">القيمة الصحيحة: <b>${s.correct}</b> ج.م</p>`
+        : `<b style="color:#B91C1C;"><i class="fa-solid fa-circle-xmark"></i> إجابة غير صحيحة</b><p style="margin-top:8px;color:var(--gray-600);">القيمة الصحيحة: <b>${s.correct}</b> ج.م</p>`;
+      showExplain(s);
+      btn.disabled = true; inp.disabled = true;
+      setTimeout(next, 3500);
+    });
+  }
+  if(s.type === 'checklist'){
+    const btn = document.getElementById('simCheckBtn');
+    const box = document.getElementById('simResultBox');
+    btn.addEventListener('click', () => {
+      const selected = Array.from(root.querySelectorAll('.sim-check input')).filter(i => i.checked).map(i => +i.dataset.i);
+      const correctIndexes = s.options.map((o,i) => o.c ? i : -1).filter(i => i >= 0);
+      const correct = selected.length === correctIndexes.length && selected.every(i => s.options[i].c);
+      if(correct) score++;
+      answers.push({stage: currentStage+1, correct});
+      root.querySelectorAll('.sim-check').forEach((el,i) => {
+        if(s.options[i].c) el.style.borderColor = '#1FA855';
+        else if(el.querySelector('input').checked) el.style.borderColor = '#DC2626';
+        el.style.pointerEvents = 'none';
+      });
+      box.classList.add('show');
+      box.innerHTML = correct
+        ? `<b style="color:#15803D;"><i class="fa-solid fa-circle-check"></i> اختيار صحيح!</b>`
+        : `<b style="color:#B91C1C;"><i class="fa-solid fa-circle-xmark"></i> اختيار غير كامل</b><p style="margin-top:8px;color:var(--gray-600);">الإجابة الصحيحة موضحة باللون الأخضر.</p>`;
+      showExplain(s);
+      btn.disabled = true;
+      setTimeout(next, 3500);
+    });
+  }
+}
+
+function showExplain(s){
+  const el = document.getElementById('simExplain');
+  el.innerHTML = `<b style="color:var(--navy-800);display:block;margin-bottom:6px;"><i class="fa-solid fa-lightbulb" style="color:var(--navy-500);"></i> التفسير المهني:</b>${s.explain}`;
+  el.classList.add('show');
+}
+
+function next(){
+  currentStage++;
+  window.scrollTo({top:0, behavior:'smooth'});
+  render();
+}
+
+function renderFinal(){
+  const percent = Math.round((score / STAGES.length) * 100);
+  let rate, rateClass, msg;
+  if(percent >= 83){ rate = 'امتياز'; rateClass = 'exc'; msg = 'أداء ممتاز! أنت مستعد لممارسة المراجعة وفق المعايير المصرية بثقة.'; }
+  else if(percent >= 50){ rate = 'جيد جداً'; rateClass = 'good'; msg = 'أداء جيد. تحتاج لمراجعة بعض المعايير لتعزيز ثقتك.'; }
+  else { rate = 'يحتاج تعزيز'; rateClass = 'bad'; msg = 'يُنصح بمراجعة معايير المراجعة المصرية مرة أخرى وإعادة المحاكاة.'; }
+
+  const list = answers.map(a => `
+    <div style="display:flex;gap:12px;padding:12px 16px;background:var(--gray-50);border-radius:10px;border-right:4px solid ${a.correct?'#1FA855':'#DC2626'};">
+      <i class="fa-solid ${a.correct?'fa-circle-check':'fa-circle-xmark'}" style="color:${a.correct?'#1FA855':'#DC2626'};margin-top:4px;"></i>
+      <div><b style="color:var(--navy-800);">المرحلة ${a.stage}</b> <span style="color:var(--gray-500);font-size:13px;">— ${a.correct?'صحيح':'خطأ'}</span></div>
+    </div>`).join('');
+
+  root.innerHTML = `
+    <div class="sim-card sim-final">
+      <div style="width:80px;height:80px;margin:0 auto 16px;border-radius:50%;background:linear-gradient(140deg,var(--navy-800),var(--navy-600));color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;"><i class="fa-solid fa-graduation-cap"></i></div>
+      <h2 style="color:var(--navy-800);font-size:28px;margin-bottom:8px;">اكتملت المحاكاة!</h2>
+      <div class="sim-score">${score}<span style="font-size:32px;color:var(--gray-400);">/${STAGES.length}</span></div>
+      <div class="sim-rate ${rateClass}">${rate} — ${percent}%</div>
+      <p style="color:var(--gray-600);font-size:16px;max-width:500px;margin:0 auto 24px;">${msg}</p>
+      <div style="text-align:right;max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:10px;">${list}</div>
+      <div class="sim-actions" style="justify-content:center;margin-top:30px;">
+        <button class="btn btn-navy" onclick="location.reload()"><i class="fa-solid fa-rotate-right"></i> إعادة المحاكاة</button>
+        <a href="contact.html" class="btn btn-wa"><i class="fa-brands fa-whatsapp"></i> استشارة مع خبير</a>
+      </div>
+    </div>`;
+}
+
+render();
+})();
+</script>
+</body>
+</html>

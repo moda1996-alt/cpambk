@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="author" content="محمود الباز قابيل"/>
+<meta name="robots" content="noindex"/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230A1F44'/%3E%3Crect x='32' y='32' width='36' height='36' rx='6' fill='%23ffffff' transform='rotate(45 50 50)'/%3E%3C/svg%3E"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<meta name="theme-color" content="#0A1F44"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link rel="stylesheet" href="style.css"/>
+<title>منصة الذكاء الاصطناعي لفحص الفواتير | محمود الباز قابيل</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<style>
+  #invoice-audit-app{font-family:'Somar Sans',system-ui,-apple-system,sans-serif;background:#fff;color:var(--gray-800);margin:0;padding:0;box-sizing:border-box;}
+  #invoice-audit-app *{box-sizing:inherit;}
+  .audit-btn-primary{background:linear-gradient(120deg,var(--navy-700),var(--navy-500));color:#fff;}
+  .audit-btn-primary:hover{background:linear-gradient(120deg,var(--navy-800),var(--navy-600));}
+  .audit-btn-danger{background:#DC2626;color:#fff;}
+  .audit-btn-danger:hover{background:#B91C1C;}
+  .audit-btn-success{background:#1FA855;color:#fff;}
+  .audit-btn-success:hover{background:#15803D;}
+  .audit-btn-ghost{background:var(--gray-100);color:var(--gray-700);border:1px solid var(--gray-200);}
+  .audit-btn-ghost:hover{background:var(--gray-200);}
+  .audit-header-bg{background:linear-gradient(135deg,var(--navy-900),var(--navy-700));}
+  .audit-tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+  .audit-tag-blue{background:rgba(42,92,171,.12);color:var(--navy-600);}
+  .audit-tag-purple{background:rgba(124,58,237,.12);color:#6D28D9;}
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div class="topbar">
+  <div class="container topbar-inner">
+    <div class="topbar-info">
+      <a href="tel:+201100811408"><i class="fa-solid fa-phone"></i> 01100811408</a>
+      <a href="https://wa.me/201067777481" class="hide-s"><i class="fa-brands fa-whatsapp"></i> 01067777481</a>
+      <span class="d-none-m hide-s"><i class="fa-solid fa-clock"></i> السبت - الخميس: 9 ص - 5 م</span>
+    </div>
+    <div class="topbar-links">
+      <a href="https://www.facebook.com/profile.php?id=61590778595481" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href="https://wa.me/201067777481"><i class="fa-brands fa-whatsapp"></i></a>
+      <a href="https://www.linkedin.com/in/mahmoud-kabil/" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+      <span class="topbar-sep"></span>
+      <a href="index.html" style="color:#fff;font-weight:700;font-size:13px;padding:5px 14px;border:1px solid rgba(255,255,255,.2);border-radius:8px;"><i class="fa-solid fa-house" style="margin-left:5px;"></i> الرئيسية</a>
+    </div>
+  </div>
+</div>
+
+<section class="page-hero" style="padding:40px 0;">
+  <div class="container">
+    <div class="crumbs"><a href="index.html">الرئيسية</a><i class="fa-solid fa-chevron-left"></i><a href="tools.html">الأدوات الذكية</a><i class="fa-solid fa-chevron-left"></i><span class="cur">فحص الفواتير</span></div>
+    <h1>منصة الذكاء الاصطناعي <em>لفحص الفواتير</em></h1>
+    <p>تطبيق خوارزميات غابة العزل والشبكات العصبية لاكتشاف القيم الشاذة في فواتيرك تلقائياً</p>
+  </div>
+</section>
+
+<div class="section" style="padding-top:30px;padding-bottom:80px;">
+  <div class="container">
+    <div id="invoice-audit-app"></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;">
+      <span>© 2026 محمود الباز قابيل — جميع الحقوق محفوظة</span>
+      <span><a href="tools.html">العودة إلى الأدوات الذكية</a></span>
+    </div>
+  </div>
+</footer>
+
+<button class="to-top" id="toTop"><i class="fa-solid fa-arrow-up"></i></button>
+<a href="https://wa.me/201067777481" class="wa-float" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
+
+<script src="main.js"></script>
+
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+class IsolationTree {
+  constructor(heightLimit, currentHeight = 0){ this.heightLimit = heightLimit; this.currentHeight = currentHeight; }
+  fit(data){
+    if(this.currentHeight >= this.heightLimit || data.length <= 1){ this.size = data.length; return this; }
+    const numFeatures = data[0].length;
+    this.splitFeature = Math.floor(Math.random() * numFeatures);
+    let min = data[0][this.splitFeature], max = data[0][this.splitFeature];
+    for(let i=1;i<data.length;i++){
+      if(data[i][this.splitFeature] < min) min = data[i][this.splitFeature];
+      if(data[i][this.splitFeature] > max) max = data[i][this.splitFeature];
+    }
+    if(min === max){ this.size = data.length; return this; }
+    this.splitValue = min + Math.random() * (max - min);
+    const leftData = data.filter(row => row[this.splitFeature] < this.splitValue);
+    const rightData = data.filter(row => row[this.splitFeature] >= this.splitValue);
+    this.left = new IsolationTree(this.heightLimit, this.currentHeight+1).fit(leftData);
+    this.right = new IsolationTree(this.heightLimit, this.currentHeight+1).fit(rightData);
+    return this;
+  }
+  pathLength(x, currentHeight = 0){
+    if(this.size !== undefined) return currentHeight + this.c(this.size);
+    if(x[this.splitFeature] < this.splitValue) return this.left.pathLength(x, currentHeight+1);
+    else return this.right.pathLength(x, currentHeight+1);
+  }
+  c(n){
+    if(n <= 1) return 0;
+    const H = Math.log(n-1) + 0.5772156649;
+    return 2*H - (2*(n-1)/n);
+  }
+}
+
+function runIsolationForest(data, numTrees = 50){
+  const sampleSize = Math.min(256, data.length);
+  const heightLimit = Math.ceil(Math.log2(sampleSize));
+  const trees = [];
+  for(let i=0;i<numTrees;i++){
+    const sample = [];
+    for(let j=0;j<sampleSize;j++) sample.push(data[Math.floor(Math.random()*data.length)]);
+    trees.push(new IsolationTree(heightLimit).fit(sample));
+  }
+  const c = new IsolationTree().c(sampleSize);
+  return data.map(x => {
+    let avg = 0;
+    for(let i=0;i<numTrees;i++) avg += trees[i].pathLength(x);
+    avg /= numTrees;
+    return Math.pow(2, -(avg/c));
+  });
+}
+
+function runAutoencoder(data, epochs = 30, learningRate = 0.1){
+  const inputSize = data[0].length;
+  const hiddenSize = Math.max(2, Math.floor(inputSize/1.5));
+  let W1 = Array.from({length:inputSize}, ()=>Array.from({length:hiddenSize}, ()=>Math.random()-0.5));
+  let W2 = Array.from({length:hiddenSize}, ()=>Array.from({length:inputSize}, ()=>Math.random()-0.5));
+  const sigmoid = x => 1/(1+Math.exp(-x));
+  const dSigmoid = x => x*(1-x);
+  for(let epoch=0; epoch<epochs; epoch++){
+    for(let i=0; i<data.length; i++){
+      const x = data[i];
+      const hidden = Array(hiddenSize).fill(0);
+      for(let j=0;j<hiddenSize;j++){
+        for(let k=0;k<inputSize;k++) hidden[j] += x[k]*W1[k][j];
+        hidden[j] = sigmoid(hidden[j]);
+      }
+      const out = Array(inputSize).fill(0);
+      for(let j=0;j<inputSize;j++){
+        for(let k=0;k<hiddenSize;k++) out[j] += hidden[k]*W2[k][j];
+        out[j] = sigmoid(out[j]);
+      }
+      const error = Array(inputSize).fill(0), dOut = Array(inputSize).fill(0);
+      for(let j=0;j<inputSize;j++){ error[j] = x[j]-out[j]; dOut[j] = error[j]*dSigmoid(out[j]); }
+      const dH = Array(hiddenSize).fill(0);
+      for(let j=0;j<hiddenSize;j++){
+        let sum=0;
+        for(let k=0;k<inputSize;k++) sum += dOut[k]*W2[j][k];
+        dH[j] = sum*dSigmoid(hidden[j]);
+      }
+      for(let j=0;j<hiddenSize;j++) for(let k=0;k<inputSize;k++) W2[j][k] += learningRate*dOut[k]*hidden[j];
+      for(let j=0;j<inputSize;j++) for(let k=0;k<hiddenSize;k++) W1[j][k] += learningRate*dH[k]*x[j];
+    }
+  }
+  return data.map(x => {
+    const hidden = Array(hiddenSize).fill(0);
+    for(let j=0;j<hiddenSize;j++){
+      for(let k=0;k<inputSize;k++) hidden[j] += x[k]*W1[k][j];
+      hidden[j] = sigmoid(hidden[j]);
+    }
+    const out = Array(inputSize).fill(0);
+    let mse = 0;
+    for(let j=0;j<inputSize;j++){
+      for(let k=0;k<hiddenSize;k++) out[j] += hidden[k]*W2[k][j];
+      out[j] = sigmoid(out[j]);
+      mse += Math.pow(x[j]-out[j], 2);
+    }
+    return mse/inputSize;
+  });
+}
+
+const normalize = (values) => {
+  const min = Math.min(...values), max = Math.max(...values);
+  return values.map(v => max===min ? 0.5 : (v-min)/(max-min));
+};
+const getThreshold = (scores, multiplier = 2) => {
+  const mean = scores.reduce((a,b)=>a+b,0)/scores.length;
+  const stdDev = Math.sqrt(scores.reduce((sq,n)=>sq+Math.pow(n-mean,2),0)/scores.length);
+  return mean + multiplier*stdDev;
+};
+const formatDateValue = (val) => {
+  if(val === undefined || val === null || val === '') return '';
+  if(typeof val === 'number'){
+    const excelEpoch = new Date(Date.UTC(1899,11,30));
+    const d = new Date(excelEpoch.getTime()+val*86400000);
+    return `${d.getUTCMonth()+1}/${d.getUTCDate()}/${d.getUTCFullYear()}`;
+  }
+  const d = new Date(val);
+  if(!isNaN(d.getTime())) return `${d.getMonth()+1}/${d.getDate()}/${d.getFullYear()}`;
+  return String(val);
+};
+const generateAnomalyReason = (row) => {
+  const reasons = [];
+  const amount = Number(row.amount) || 0, tax = Number(row.tax) || 0;
+  const d1 = new Date(row.issueDate), d2 = new Date(row.submitDate || row.issueDate);
+  let dateDiff = 0;
+  if(!isNaN(d1) && !isNaN(d2)) dateDiff = Math.abs((d2-d1)/(1000*60*60*24));
+  if(tax > amount) reasons.push("قيمة الضريبة تتجاوز المبلغ الإجمالي للفاتورة، وهو خطأ حسابي أو تلاعب واضح.");
+  else if(tax > amount*0.30) reasons.push("نسبة الضريبة مرتفعة جداً وغير منطقية مقارنة بالمبلغ الإجمالي.");
+  else if(amount > 1000 && tax === 0) reasons.push("الفاتورة ذات قيمة عالية لكن لم يتم تسجيل أي ضريبة عليها.");
+  if((row.status==='Cancelled' || row.status==='Invalid') && amount > 10000)
+    reasons.push(`حالة الفاتورة "${row.status}" ومع ذلك تحمل قيمة مالية ضخمة، مما يستدعي المراجعة.`);
+  if(dateDiff > 60) reasons.push(`فارق زمني مريب يبلغ ${Math.round(dateDiff)} يوم بين الإصدار والتقديم.`);
+  if(reasons.length === 0){
+    if(row.isIfAnomaly && !row.isAeAnomaly) reasons.push("تم عزلها لأنها شاذة إحصائياً وفق خوارزمية غابة العزل — هيكل الفاتورة يبتعد عن النمط العام.");
+    else if(!row.isIfAnomaly && row.isAeAnomaly) reasons.push("تم عزلها لأن الشبكة العصبية رصدت تركيبة بيانات غير متناسقة (خطأ إعادة بناء مرتفع).");
+    else reasons.push("تم عزلها لأنها حالة شاذة مزدوجة — التقطتها الخوارزميتان، مما يجعلها حالة مؤكدة تستوجب المراجعة البشرية.");
+  }
+  return reasons.join(' بالإضافة إلى ذلك، ');
+};
+
+function App(){
+  const [results, setResults] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const check = setInterval(() => {
+      if(window.XLSX && window.html2pdf){ setReady(true); clearInterval(check); }
+    }, 300);
+    return () => clearInterval(check);
+  }, []);
+
+  const generateTemplate = () => {
+    const templateData = [];
+    const statuses = ['Valid','Valid','Valid','Valid','Valid','Cancelled','Invalid'];
+    for(let i=1;i<=50;i++){
+      const amount = Math.floor(Math.random()*5000)+100;
+      const status = statuses[Math.floor(Math.random()*statuses.length)];
+      const issueD = new Date(2026, 3, Math.floor(Math.random()*15)+1);
+      const subD = new Date(issueD.getTime() + Math.random()*5*24*60*60*1000);
+      templateData.push({
+        'رقم الفاتورة': `INV-2026-${1000+i}`,
+        'الحالة': status,
+        'تاريخ الإصدار': `${issueD.getMonth()+1}/${issueD.getDate()}/${issueD.getFullYear()}`,
+        'تاريخ التقديم': `${subD.getMonth()+1}/${subD.getDate()}/${subD.getFullYear()}`,
+        'قيمة الفاتورة': amount,
+        'ضريبة القيمة المضافة': parseFloat((amount*0.15).toFixed(2))
+      });
+    }
+    templateData.push({'رقم الفاتورة':'INV-2026-9991','الحالة':'Valid','تاريخ الإصدار':'4/17/2026','تاريخ التقديم':'4/17/2026','قيمة الفاتورة':500,'ضريبة القيمة المضافة':600});
+    templateData.push({'رقم الفاتورة':'INV-2026-9992','الحالة':'Cancelled','تاريخ الإصدار':'4/10/2026','تاريخ التقديم':'4/17/2026','قيمة الفاتورة':950000,'ضريبة القيمة المضافة':142500});
+    templateData.push({'رقم الفاتورة':'INV-2026-9993','الحالة':'Invalid','تاريخ الإصدار':'1/1/2026','تاريخ التقديم':'4/17/2026','قيمة الفاتورة':100,'ضريبة القيمة المضافة':15});
+    const ws = window.XLSX.utils.json_to_sheet(templateData);
+    const wb = window.XLSX.utils.book_new();
+    window.XLSX.utils.book_append_sheet(wb, ws, "الفواتير");
+    window.XLSX.writeFile(wb, "نموذج_اختبار_الفواتير.xlsx");
+  };
+
+  const generateEmptyTemplate = () => {
+    const templateData = [{'رقم الفاتورة':'INV-001','الحالة':'Valid','تاريخ الإصدار':'4/17/2026','تاريخ التقديم':'4/18/2026','قيمة الفاتورة':1000,'ضريبة القيمة المضافة':150}];
+    const ws = window.XLSX.utils.json_to_sheet(templateData);
+    const wb = window.XLSX.utils.book_new();
+    window.XLSX.utils.book_append_sheet(wb, ws, "الفواتير");
+    window.XLSX.writeFile(wb, "نموذج_فارغ_للفواتير.xlsx");
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    setLoading(true); setResults(null);
+    const reader = new FileReader();
+    reader.onload = async (evt) => {
+      try{
+        const wb = window.XLSX.read(evt.target.result, {type:'binary'});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const parsed = window.XLSX.utils.sheet_to_json(ws);
+        await processInvoices(parsed);
+      }catch(err){
+        console.error(err);
+        alert("خطأ في قراءة الملف — تأكد من تطابق الهيكل مع النموذج.");
+        setLoading(false);
+      }
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  const processInvoices = async (rawData) => {
+    await new Promise(r => setTimeout(r, 50));
+    try{
+      const amounts = rawData.map(r => parseFloat(r['قيمة الفاتورة']) || 0);
+      const taxes = rawData.map(r => parseFloat(r['ضريبة القيمة المضافة']) || 0);
+      const dateDiffs = rawData.map(r => {
+        const d1 = new Date(formatDateValue(r['تاريخ الإصدار']));
+        const d2 = new Date(formatDateValue(r['تاريخ التقديم']));
+        return (!isNaN(d1) && !isNaN(d2)) ? Math.abs((d2-d1)/(1000*60*60*24)) : 0;
+      });
+      const statusMap = {'Valid':1,'Cancelled':0.5,'Invalid':0};
+      const statuses = rawData.map(r => statusMap[r['الحالة']] ?? 1);
+      const nA = normalize(amounts), nT = normalize(taxes), nD = normalize(dateDiffs), nS = normalize(statuses);
+      const mlData = rawData.map((_,i) => [nA[i], nT[i], nD[i], nS[i]]);
+      const ifScores = runIsolationForest(mlData);
+      const aeScores = runAutoencoder(mlData);
+      const ifT = getThreshold(ifScores, 2);
+      const aeT = getThreshold(aeScores, 2);
+      let ifC = 0, aeC = 0;
+      const enriched = rawData.map((r,i) => {
+        const isIF = ifScores[i] > ifT, isAE = aeScores[i] > aeT;
+        if(isIF) ifC++; if(isAE) aeC++;
+        return {
+          ...r,
+          invoiceId: r['رقم الفاتورة'] || `Row-${i+1}`,
+          amount: r['قيمة الفاتورة'], tax: r['ضريبة القيمة المضافة'],
+          status: r['الحالة'] || 'غير محدد',
+          issueDate: formatDateValue(r['تاريخ الإصدار']),
+          submitDate: formatDateValue(r['تاريخ التقديم']),
+          ifScore: (ifScores[i]*100).toFixed(2),
+          aeScore: (aeScores[i]*100).toFixed(4),
+          isIfAnomaly: isIF, isAeAnomaly: isAE, isAnomaly: isIF || isAE
+        };
+      });
+      setResults({
+        total: rawData.length,
+        ifAnomaliesCount: ifC, aeAnomaliesCount: aeC,
+        totalAnomalies: enriched.filter(d => d.isAnomaly).length,
+        details: enriched.sort((a,b) => b.isAnomaly - a.isAnomaly)
+      });
+    }catch(err){ console.error(err); alert("خطأ في التحليل."); }
+    finally{ setLoading(false); }
+  };
+
+  const exportAnomaliesToExcel = () => {
+    if(!results) return;
+    const anomalies = results.details.filter(d => d.isAnomaly).map(r => ({
+      'رقم الفاتورة': r.invoiceId, 'الحالة': r.status,
+      'تاريخ الإصدار': r.issueDate, 'تاريخ التقديم': r.submitDate,
+      'قيمة الفاتورة': r.amount, 'ضريبة القيمة المضافة': r.tax,
+      'تقييم غابة العزل (IF)': r.ifScore, 'تقييم الشبكات العصبية (AE)': r.aeScore,
+      'الخوارزمية المكتشفة': (r.isIfAnomaly?'Isolation Forest ':'') + (r.isAeAnomaly?'Autoencoder':'').trim()
+    }));
+    if(!anomalies.length){ alert("لا توجد فواتير شاذة."); return; }
+    const ws = window.XLSX.utils.json_to_sheet(anomalies);
+    const wb = window.XLSX.utils.book_new();
+    window.XLSX.utils.book_append_sheet(wb, ws, "الفواتير_الشاذة");
+    window.XLSX.writeFile(wb, "الفواتير_الشاذة.xlsx");
+  };
+
+  const exportToPDF = () => {
+    window.scrollTo(0,0);
+    const element = document.getElementById('pdf-report-content');
+    window.html2pdf().set({
+      margin: 0.2, filename: 'التقرير_التحليلي.pdf',
+      image: {type:'jpeg', quality:1},
+      html2canvas: {scale:2, useCORS:true, backgroundColor:'#ffffff', scrollY:0, scrollX:0},
+      jsPDF: {unit:'in', format:'a4', orientation:'portrait'}
+    }).from(element).save();
+  };
+
+  return (
+    <div className="w-full" dir="rtl">
+      <div className="audit-header-bg text-white shadow-lg p-6 rounded-t-xl">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-right">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">منصة الذكاء الاصطناعي لفحص الفواتير</h2>
+            <p className="text-sm opacity-80">غابة العزل + الشبكات العصبية — اكتشاف القيم الشاذة بدون قواعد بشرية مسبقة</p>
+          </div>
+          <div className="bg-white/10 backdrop-blur px-5 py-3 rounded-lg border border-white/20 text-center">
+            <p className="text-xs opacity-75 mb-1">إعداد الباحث</p>
+            <p className="text-lg font-bold">محمود الباز قابيل</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 md:p-6 bg-white border border-slate-200 rounded-b-xl shadow-md">
+        <div className="mb-6">
+          <h3 className="text-lg font-bold mb-4 text-slate-800 flex items-center gap-2"><span className="w-7 h-7 rounded-full bg-slate-900 text-white text-sm flex items-center justify-center">١</span> تهيئة ورفع البيانات</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+              <h4 className="font-bold mb-2 text-slate-700">تحميل نموذج البيانات</h4>
+              <p className="text-sm text-slate-500 mb-3">حمّل نموذج فارغ لبياناتك الحقيقية، أو نموذج تجريبي لتجربة الخوارزميات.</p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button onClick={generateEmptyTemplate} disabled={!ready} className="audit-btn-primary px-4 py-2 rounded font-bold text-sm disabled:opacity-50 transition flex-1"><i className="fa-solid fa-file-excel" style={{marginLeft:6}}></i> نموذج فارغ</button>
+                <button onClick={generateTemplate} disabled={!ready} className="audit-btn-ghost px-4 py-2 rounded font-bold text-sm disabled:opacity-50 transition flex-1"><i className="fa-solid fa-flask" style={{marginLeft:6}}></i> نموذج تجريبي</button>
+              </div>
+            </div>
+            <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+              <h4 className="font-bold mb-2 text-slate-700">رفع ملف الفواتير</h4>
+              <p className="text-sm text-slate-500 mb-3">ارفع ملف Excel بالأعمدة: رقم الفاتورة، الحالة، تاريخ الإصدار، تاريخ التقديم، قيمة الفاتورة، ضريبة القيمة المضافة.</p>
+              <label className="audit-btn-primary px-4 py-2 rounded font-bold text-sm cursor-pointer transition flex items-center justify-center gap-2">
+                <i className="fa-solid fa-upload"></i>
+                <span>{loading ? 'جاري الفحص...' : 'اختر ملف (.xlsx)'}</span>
+                <input type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFileUpload} disabled={loading} />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {loading && (
+          <div className="flex flex-col items-center justify-center p-10 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="w-14 h-14 border-4 border-slate-200 border-t-slate-900 rounded-full animate-spin"></div>
+            <p className="mt-4 text-slate-700 font-bold">الذكاء الاصطناعي يقوم الآن بفحص فواتيرك...</p>
+          </div>
+        )}
+
+        {results && !loading && (
+          <div className="space-y-5">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-900 text-white p-5 rounded-xl gap-4">
+              <h3 className="text-xl font-bold flex items-center gap-2"><span className="w-7 h-7 rounded-full bg-white text-slate-900 text-sm flex items-center justify-center">٢</span> نتائج الفحص الآلي</h3>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={exportAnomaliesToExcel} className="audit-btn-success px-4 py-2 rounded font-bold text-sm transition"><i className="fa-solid fa-file-excel" style={{marginLeft:6}}></i> تحميل الشاذة (Excel)</button>
+                <button onClick={exportToPDF} className="audit-btn-danger px-4 py-2 rounded font-bold text-sm transition"><i className="fa-solid fa-file-pdf" style={{marginLeft:6}}></i> تنزيل التقرير (PDF)</button>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto w-full bg-slate-100 rounded-xl border border-slate-300 p-3 md:p-6">
+              <div id="pdf-report-content" dir="rtl" className="bg-white w-[800px] min-w-[800px] mx-auto shadow-sm border border-slate-200" style={{fontFamily:'Somar Sans,Arial,sans-serif', color:'#1e293b', direction:'rtl', textAlign:'right'}}>
+                <div className="bg-slate-900 text-white p-8 border-b-8 border-slate-600">
+                  <div className="flex justify-between items-start">
+                    <div className="w-2/3">
+                      <h1 className="text-2xl font-extrabold mb-3 leading-snug">تقرير تحليلي للمراجعة الآلية باستخدام التعلم غير الخاضع للإشراف</h1>
+                      <p className="text-sm opacity-80">من إعداد: محمود الباز قابيل — محاسب ومراجع قانوني وخبير ضرائب</p>
+                    </div>
+                    <div className="text-center bg-slate-800 p-3 rounded-lg border border-slate-700">
+                      <p className="text-xs opacity-70 mb-1">تاريخ الاستخراج</p>
+                      <p className="text-lg font-bold" dir="ltr">{new Date().toLocaleDateString('en-GB')}</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-8">
+                  <h2 className="text-2xl font-bold text-slate-900 border-b-2 border-slate-200 pb-2 mb-4 inline-block">مقدمة وآلية الفحص</h2>
+                  <p className="text-base mb-4 leading-relaxed" style={{textAlign:'justify'}}>يوضح هذا التقرير نتائج الفحص الآلي لمجموعة الفواتير المرفوعة. تم استخدام خوارزميات التعلم غير الخاضع للإشراف: <strong>غابة العزل (Isolation Forest)</strong> و<strong>الشبكات العصبية (Autoencoders)</strong>.</p>
+                  <p className="text-base mb-4 leading-relaxed" style={{textAlign:'justify'}}>الهدف: استنطاق البيانات واكتشاف الأخطاء بدون قواعد بشرية مسبقة. تم عزل الفواتير التي تكسر النمط الإحصائي الطبيعي — سواء لأخطاء حسابية، شذوذ في القيم، تضارب في التواريخ، أو حالات غير منطقية.</p>
+                  <div className="bg-amber-50 border-r-4 border-amber-500 p-4 rounded-l-lg mb-6 text-amber-900 font-semibold text-sm">ملاحظة: الفواتير المعزولة لم يُحكم عليها بالتزوير، بل تم تجنيبها للمراجعة البشرية.</div>
+
+                  <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 mb-8">
+                    <h3 className="text-lg font-bold text-slate-800 mb-3">كيف تقرأ أرقام التقييم (Scores)؟</h3>
+                    <ul className="space-y-3 text-slate-700 text-sm">
+                      <li><span className="audit-tag audit-tag-blue" dir="ltr">IF Score</span> <strong>تقييم غابة العزل:</strong> كلما كان أعلى، دل على شذوذ إحصائي كبير.</li>
+                      <li><span className="audit-tag audit-tag-purple" dir="ltr">AE Score</span> <strong>تقييم الشبكات العصبية:</strong> خطأ إعادة البناء — كلما ارتفع دل على تركيبة بيانات متناقضة.</li>
+                    </ul>
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-3 break-inside-avoid mb-8">
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-slate-800 text-center">
+                      <p className="text-xs text-slate-500 font-bold mb-1">إجمالي المفحوصة</p>
+                      <p className="text-2xl font-extrabold text-slate-800">{results.total}</p>
+                    </div>
+                    <div className="bg-red-50 p-4 rounded-xl border border-red-200 border-t-4 border-t-red-600 text-center">
+                      <p className="text-xs text-red-800 font-bold mb-1">تم عزلها</p>
+                      <p className="text-2xl font-extrabold text-red-600">{results.totalAnomalies}</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-slate-600 text-center">
+                      <p className="text-xs text-slate-500 font-bold mb-1">اكتشافات IF</p>
+                      <p className="text-2xl font-extrabold text-slate-700">{results.ifAnomaliesCount}</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border border-slate-200 border-t-4 border-t-slate-500 text-center">
+                      <p className="text-xs text-slate-500 font-bold mb-1">اكتشافات AE</p>
+                      <p className="text-2xl font-extrabold text-slate-600">{results.aeAnomaliesCount}</p>
+                    </div>
+                  </div>
+
+                  <h2 className="text-2xl font-bold text-slate-900 border-b-2 border-slate-200 pb-3 mb-5 inline-block">الفواتير المعزولة</h2>
+                  {results.details.filter(d => d.isAnomaly).length === 0 ? (
+                    <div className="p-6 text-center bg-green-50 border border-green-200 rounded-xl text-green-700 font-bold">البيانات ممتازة! لم يتم رصد أي فواتير شاذة.</div>
+                  ) : (
+                    <div className="space-y-4">
+                      {results.details.filter(d => d.isAnomaly).map((row, idx) => (
+                        <div key={idx} className="bg-white border border-slate-200 border-r-4 border-r-red-500 rounded-xl overflow-hidden break-inside-avoid shadow-sm">
+                          <div className="bg-slate-50 px-5 py-3 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3">
+                            <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                              فاتورة رقم: <span className="font-mono bg-white px-3 py-1 rounded border border-slate-200 text-sm" dir="ltr">{row.invoiceId}</span>
+                            </h3>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${row.status==='Valid'?'bg-green-100 text-green-700':row.status==='Cancelled'?'bg-slate-200 text-slate-700':'bg-red-100 text-red-700'}`}>{row.status}</span>
+                          </div>
+                          <div className="p-5">
+                            <div className="grid grid-cols-4 gap-3 mb-4">
+                              <div className="bg-slate-50 p-3 rounded-lg border border-slate-100"><span className="text-slate-500 block text-[10px] mb-1 font-bold">تاريخ الإصدار</span><span className="font-mono text-slate-800 font-bold block text-sm" dir="ltr">{row.issueDate}</span></div>
+                              <div className="bg-slate-50 p-3 rounded-lg border border-slate-100"><span className="text-slate-500 block text-[10px] mb-1 font-bold">تاريخ التقديم</span><span className="font-mono text-slate-800 font-bold block text-sm" dir="ltr">{row.submitDate||'---'}</span></div>
+                              <div className="bg-red-50 p-3 rounded-lg border border-red-100"><span className="text-red-800 block text-[10px] mb-1 font-bold">قيمة الفاتورة</span><span className="font-mono text-red-700 font-extrabold block">{row.amount}</span></div>
+                              <div className="bg-red-50 p-3 rounded-lg border border-red-100"><span className="text-red-800 block text-[10px] mb-1 font-bold">الضريبة</span><span className="font-mono text-red-700 font-extrabold block">{row.tax}</span></div>
+                            </div>
+                            <div className="bg-red-50/70 p-4 rounded-lg border border-red-100">
+                              <h4 className="font-bold text-red-900 mb-1 text-sm">سبب العزل:</h4>
+                              <p className="text-red-800 leading-relaxed text-sm" style={{textAlign:'justify'}}>{generateAnomalyReason(row)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('invoice-audit-app')).render(<App/>);
+</script>
+</body>
+</html>
